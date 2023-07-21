@@ -17,6 +17,16 @@ public class Shortener {
     private String realUrl;
 
 
+    public Shortener(){
+
+    }
+
+    public Shortener(UUID id, String shortId, String realUrl) {
+        this.id = id;
+        this.shortId = shortId;
+        this.realUrl = realUrl;
+    }
+
     public UUID getId() {
         return id;
     }
