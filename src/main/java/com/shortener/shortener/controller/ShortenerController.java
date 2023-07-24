@@ -7,10 +7,14 @@ import com.shortener.shortener.repository.ShortenerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;
@@ -65,6 +69,22 @@ public String generateShortId(){
 
 
 }
+    @GetMapping("/{shortId}")
+    public ResponseEntity<String> redirectToRealUrl(@PathVariable String shortId) throws IOException {
+        File file = new File("src/main/resources/links.json");
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {});
+
+        for (Shortener link : myDataList) {
+            if (link.getShortId().equals(shortId)) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.setLocation(URI.create(link.getRealUrl()));
+                return new ResponseEntity<>(headers, HttpStatus.FOUND);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 
 
 
