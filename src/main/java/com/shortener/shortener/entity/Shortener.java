@@ -10,32 +10,22 @@ import java.util.UUID;
 @Entity
 public class Shortener {
 
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-
     private String shortId;
-
     private String realUrl;
+    public Shortener(){}
 
-    public Shortener (){
 
-    }
+
     public Shortener(UUID id, String shortId, String realUrl) {
         this.id = id;
         this.shortId = shortId;
         this.realUrl = realUrl;
     }
 
-    public String getRealUrl() {
-        return realUrl;
-    }
 
-    public void setRealUrl(String realUrl) {
-        this.realUrl = realUrl;
-    }
     public UUID getId() {
         return id;
     }
@@ -50,5 +40,16 @@ public class Shortener {
 
     public void setShortId(String shortId) {
         this.shortId = shortId;
+    }
+
+
+
+
+    public String getRealUrl() {
+        return realUrl;
+    }
+
+    public void setRealUrl(String realUrl) {
+        this.realUrl = realUrl;
     }
 }
