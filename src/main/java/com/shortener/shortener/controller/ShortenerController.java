@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @RestController
@@ -23,17 +24,40 @@ public class ShortenerController {
 
 @PostMapping("")
 public Shortener createUrl(@RequestBody Shortener shortener) throws IOException {
-     //shortenerRepository.save(shortener);
+
+
     shortener.setId(UUID.randomUUID());
-   // shortener.setShortId(shortener.getId().);
+    shortener.setShortId(generateShortId());
 
     File file = new File("src/main/resources/links.json");
     ObjectMapper objectMapper = new ObjectMapper();
     List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {});
+
+    for(int i = 0; i < myDataList.size(); i++){
+        if(myDataList.get(i).getShortId()==shortener.getShortId()){
+            shortener.setShortId(generateShortId());
+            i = -1;
+        }
+    }
     myDataList.add(shortener);
     objectMapper.writeValue(file, myDataList);
 
     return shortener;
 }
+
+
+
+public String generateShortId(){
+    String str="";
+    Random rand = new Random();
+    String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    int longueur = alphabet.length();
+    for(int i = 0; i < 8; i++) {
+        int k = rand.nextInt(longueur);
+        str = str + alphabet.charAt(k);
+    }
+    return str;
+}
+
 
 }
