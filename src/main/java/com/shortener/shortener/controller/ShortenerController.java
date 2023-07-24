@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -45,8 +47,6 @@ public Shortener createUrl(@RequestBody Shortener shortener) throws IOException 
     return shortener;
 }
 
-
-
 public String generateShortId(){
     String str="";
     Random rand = new Random();
@@ -57,6 +57,13 @@ public String generateShortId(){
         str = str + alphabet.charAt(k);
     }
     return str;
+//    Base64.Encoder encoder = Base64.getUrlEncoder();
+//    SecureRandom random = new SecureRandom();
+//    byte[] array = new byte[6]; // length is bounded 8
+//    random.nextBytes(array);
+//    return encoder.encodeToString(array);
+
+
 }
 
 
