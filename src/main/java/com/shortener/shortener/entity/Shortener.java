@@ -10,17 +10,11 @@ import java.util.UUID;
 @Entity
 public class Shortener {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-
     private String shortId;
     private String realUrl;
-
-
-    public Shortener(){
-
-    }
+    public Shortener(){}
 
 
     public Shortener(UUID id, String shortId, String realUrl) {
