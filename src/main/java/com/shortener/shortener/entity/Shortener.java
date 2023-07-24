@@ -12,10 +12,16 @@ public class Shortener {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+
+
     private String shortId;
     private String realUrl;
 
-    public Shortener(){}
+
+    public Shortener(){
+
+    }
+
 
     public Shortener(UUID id, String shortId, String realUrl) {
         this.id = id;
