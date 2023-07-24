@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -50,4 +51,6 @@ public class Shortener {
     public void setRealUrl(String realUrl) {
         this.realUrl = realUrl;
     }
+
+
 }
