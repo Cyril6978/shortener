@@ -1,9 +1,11 @@
 [ {
-  "id" : "2fa66a4f-6a18-4432-8915-813fdfe38b63",
-  "shortId" : "v6nZsoPc",
-  "realUrl" : "https://google.com"
+  "id" : "2375cc95-73cc-4213-9fa2-36e43bedfdf6",
+  "shortId" : "j1CkvIvK",
+  "realUrl" : "http://google.com",
+  "xRemovalToken" : "Coucou"
 }, {
-  "id" : "2af7e0d5-f48b-4daf-a7a9-0f448d93228d",
-  "shortId" : "k7Jes7VF",
-  "realUrl" : "https://google.com"
+  "id" : "f784410b-5ee3-4281-9552-3e78a189328f",
+  "shortId" : "s9iozmNS",
+  "realUrl" : "http://google.com",
+  "xRemovalToken" : "Coucou"
 } ]
