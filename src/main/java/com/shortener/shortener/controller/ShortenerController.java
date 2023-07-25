@@ -3,69 +3,64 @@ package com.shortener.shortener.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shortener.shortener.entity.Shortener;
-import com.shortener.shortener.repository.ShortenerRepository;
+import com.shortener.shortener.service.ShortenerService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+
+
+
+
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @RestController
 public class ShortenerController {
 
 @Autowired
-
-    ShortenerRepository shortenerRepository;
+private ShortenerService shortenerService;
 
 @PostMapping("")
 public Shortener createUrl(@RequestBody Shortener shortener) throws IOException {
-
-
     shortener.setId(UUID.randomUUID());
-    shortener.setShortId(generateShortId());
-
+    shortener.setShortId(shortenerService.generateShortId());
     File file = new File("src/main/resources/links.json");
     ObjectMapper objectMapper = new ObjectMapper();
     List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {});
-
     for(int i = 0; i < myDataList.size(); i++){
         if(myDataList.get(i).getShortId()==shortener.getShortId()){
-            shortener.setShortId(generateShortId());
+            shortener.setShortId(shortenerService.generateShortId());
             i = -1;
         }
     }
     myDataList.add(shortener);
     objectMapper.writeValue(file, myDataList);
-
     return shortener;
 }
+@GetMapping("/{shortId}")
+    public ResponseEntity<String> getOriginalUrl(@PathVariable String shortId) throws IOException{
+    File file = new File("src/main/resources/links.json");
+    ObjectMapper objectMapper = new ObjectMapper();
+    List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {});
+    String shortenerToDisplay =  myDataList.stream().filter(
+            myObj -> myObj.getShortId().equals(shortId)
+    ).findFirst().get().getRealUrl();
 
-public String generateShortId(){
-    String str="";
-    Random rand = new Random();
-    String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    int longueur = alphabet.length();
-    for(int i = 0; i < 8; i++) {
-        int k = rand.nextInt(longueur);
-        str = str + alphabet.charAt(k);
-    }
-    return str;
-//    Base64.Encoder encoder = Base64.getUrlEncoder();
-//    SecureRandom random = new SecureRandom();
-//    byte[] array = new byte[6]; // length is bounded 8
-//    random.nextBytes(array);
-//    return encoder.encodeToString(array);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setLocation(URI.create(shortenerToDisplay));
 
-
+return new ResponseEntity<>(headers,HttpStatus.FOUND);
 }
-    @GetMapping("/{shortId}")
+/*    @GetMapping("/{shortId}")
     public ResponseEntity<String> redirectToRealUrl(@PathVariable String shortId) throws IOException {
         File file = new File("src/main/resources/links.json");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -79,7 +74,6 @@ public String generateShortId(){
             }
         }
         return ResponseEntity.notFound().build();
-    }
-
+    }*/
 
 }
