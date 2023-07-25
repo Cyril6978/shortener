@@ -8,11 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.UUID;
-//@org.springframework.context.annotation.Configuration
-//@EnableSpringDataWebSupport
+
 
 @Repository
-//@RepositoryRestResource(path ="/links")
+
 public interface ShortenerRepository extends JpaRepository<Shortener, UUID> {
 
 

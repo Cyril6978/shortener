@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shortener.shortener.entity.Shortener;
 import com.shortener.shortener.repository.ShortenerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -84,8 +80,6 @@ public String generateShortId(){
         }
         return ResponseEntity.notFound().build();
     }
-
-
 
 
 }
