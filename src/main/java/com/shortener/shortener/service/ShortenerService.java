@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.UUID;
+
 @Service
 public class ShortenerService {
 
@@ -25,7 +27,6 @@ public class ShortenerService {
 //    byte[] array = new byte[6]; // length is bounded 8
 //    random.nextBytes(array);
 //    return encoder.encodeToString(array);
-
     }
     public Boolean startWithHttpOrHttps(String realUrl){
     if(realUrl.substring(0,4).equals("http")) {
@@ -33,7 +34,6 @@ public class ShortenerService {
     }
     return false;
     }
-
     public ShortenerDto TransformShortenerEntityInShortenerDto(Shortener shortener) {
         ShortenerDto shortenerDto = new ShortenerDto();
         shortenerDto.setId(shortener.getId());
@@ -41,5 +41,8 @@ public class ShortenerService {
         shortenerDto.setRealUrl(shortener.getRealUrl());
         // Récupere et ajoute au DTO toutes les propriétés que tu auras déclarées des 2 côtés
         return shortenerDto;
+    }
+    public String generateXRemovalToken(){
+        return UUID.randomUUID().toString().replaceAll("-","");
     }
 }

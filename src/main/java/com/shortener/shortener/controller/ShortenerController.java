@@ -37,7 +37,7 @@ public ShortenerDto  createUrl(@RequestBody Shortener shortener) throws IOExcept
     }
     shortener.setId(UUID.randomUUID());
     shortener.setShortId(shortenerService.generateShortId());
-    shortener.setxRemovalToken("Coucou");
+    shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
     File file = new File("src/main/resources/links.json");
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
