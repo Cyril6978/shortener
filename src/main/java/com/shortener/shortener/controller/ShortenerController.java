@@ -3,6 +3,7 @@ package com.shortener.shortener.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.shortener.shortener.dto.ShortenerDto;
 import com.shortener.shortener.entity.Shortener;
 import com.shortener.shortener.service.ShortenerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,29 +27,28 @@ public class ShortenerController {
     private ShortenerService shortenerService;
 
     @PostMapping("")
-    public Shortener createUrl(@RequestBody Shortener shortener) throws IOException {
+    public ShortenerDto  createUrl(@RequestBody Shortener shortener) throws IOException {
+        if(!shortenerService.startWithHttpOrHttps(shortener.getRealUrl())){
+            return new ShortenerDto();
+        }
+
         shortener.setId(UUID.randomUUID());
         shortener.setShortId(shortenerService.generateShortId());
-
-        String xRemovalToken = shortenerService.generateXRemovalToken();
-        shortener.setXRemovalToken(xRemovalToken);
-
-
+        shortener.setXRemovalToken(shortenerService.generateXRemovalToken());
         File file = new File("src/main/resources/links.json");
         ObjectMapper objectMapper = new ObjectMapper();
-
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {});
         for(int i = 0; i < myDataList.size(); i++){
             if(myDataList.get(i).getShortId().equals(shortener.getShortId())){
                 shortener.setShortId(shortenerService.generateShortId());
-//                i = -1;
+                //i = -1;
             }
         }
         myDataList.add(shortener);
         objectMapper.writeValue(file, myDataList);
-        return shortener;
+        return shortenerService.TransformShortenerEntityInShortenerDto(shortener);
+
     }
 
 
@@ -67,5 +67,6 @@ public class ShortenerController {
 
         return new ResponseEntity<>(headers,HttpStatus.FOUND);
     }
+
 
 }
