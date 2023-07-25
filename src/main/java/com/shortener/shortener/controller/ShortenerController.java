@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.security.SecureRandom;
-import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -34,32 +32,18 @@ public class ShortenerController {
     }
 
 
-
-        Base64.Encoder encoder = Base64.getUrlEncoder();
-        SecureRandom random = new SecureRandom();
-
-
-        public String tiny1() {
-            byte[] array = new byte[6]; // length is bounded 8
-            random.nextBytes(array);
-            return encoder.encodeToString(array);
-
-
-
-    }
     @GetMapping("/{shortId}")
-    public ResponseEntity<String> redirectToRealUrl(@PathVariable String shortId) throws IOException {
+    public ResponseEntity<String> getOriginalUrl(@PathVariable String shortId) throws IOException{
         File file = new File("src/main/resources/links.json");
         ObjectMapper objectMapper = new ObjectMapper();
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {});
+        String shortenerToDisplay =  myDataList.stream().filter(
+                myObj -> myObj.getShortId().equals(shortId)
+        ).findFirst().get().getRealUrl();
 
-        for (Shortener link : myDataList) {
-            if (link.getShortId().equals(shortId)) {z
-                HttpHeaders headers = new HttpHeaders();
-                headers.setLocation(URI.create(link.getRealUrl()));
-                return new ResponseEntity<>(headers, HttpStatus.FOUND);
-            }
-        }
-        return ResponseEntity.notFound().build();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(shortenerToDisplay));
+
+        return new ResponseEntity<>(headers,HttpStatus.FOUND);
     }
 }
