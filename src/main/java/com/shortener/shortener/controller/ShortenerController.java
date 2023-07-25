@@ -29,6 +29,11 @@ public class ShortenerController {
     public Shortener createUrl(@RequestBody Shortener shortener) throws IOException {
         shortener.setId(UUID.randomUUID());
         shortener.setShortId(shortenerService.generateShortId());
+
+        String xRemovalToken = generateXRemovalToken(); //
+        shortener.setXRemovalToken(xRemovalToken);
+
+
         File file = new File("src/main/resources/links.json");
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -36,15 +41,20 @@ public class ShortenerController {
 
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {});
         for(int i = 0; i < myDataList.size(); i++){
-            if(myDataList.get(i).getShortId()==shortener.getShortId()){
+            if(myDataList.get(i).getShortId().equals(shortener.getShortId())){
                 shortener.setShortId(shortenerService.generateShortId());
-                i = -1;
+//                i = -1;
             }
         }
         myDataList.add(shortener);
         objectMapper.writeValue(file, myDataList);
         return shortener;
     }
+
+    private String generateXRemovalToken(){
+        return UUID.randomUUID().toString().replaceAll("-","");
+    }
+
     @GetMapping("/{shortId}")
     public ResponseEntity<String> getOriginalUrl(@PathVariable String shortId) throws IOException{
         File file = new File("src/main/resources/links.json");

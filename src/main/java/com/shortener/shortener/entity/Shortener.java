@@ -16,6 +16,7 @@ public class Shortener {
 
     private String shortId;
     private String realUrl;
+    private String xRemovalToken;
 
 
     public Shortener(){
@@ -26,6 +27,7 @@ public class Shortener {
         this.id = id;
         this.shortId = shortId;
         this.realUrl = realUrl;
+        this.xRemovalToken = xRemovalToken;
     }
 
     public UUID getId() {
@@ -52,5 +54,11 @@ public class Shortener {
         this.realUrl = realUrl;
     }
 
+    public String getXRemovalToken() {
+        return xRemovalToken;
+    }
 
+    public void setXRemovalToken(String xRemovalToken) {
+        this.xRemovalToken = xRemovalToken;
+    }
 }

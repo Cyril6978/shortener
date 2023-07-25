@@ -1,13 +1,16 @@
 [ {
-  "id" : "a121a735-00ef-4035-8669-d7be8a8baefd",
-  "shortId" : "jCsCMJIC",
-  "realUrl" : "https://www.google.com"
+  "id" : "84250929-0c8d-4374-b14a-7c366e260c78",
+  "shortId" : "xRlD2vpx",
+  "realUrl" : "https://www.cdiscount.fr",
+  "xremovalToken" : "efe9ef14e09e4721b9aff18a42aaa6cd"
 }, {
-  "id" : "34143394-39da-46cd-9b73-9b14e43f5828",
-  "shortId" : "DQf6ThDh",
-  "realUrl" : "https://www.amazon.fr"
+  "id" : "62ef72f7-d8a9-412c-bf33-e84b534d3355",
+  "shortId" : "l7ABuJZq",
+  "realUrl" : "https://www.amazon.fr",
+  "xremovalToken" : "309f2b2c965c4e3797b738f6a0ed8df6"
 }, {
-  "id" : "9b20babf-a466-4a40-b4f4-cc5161a95698",
-  "shortId" : "HWH64pZ4",
-  "realUrl" : "https://www.cdiscount.fr"
+  "id" : "5c66790a-9a77-4549-adb6-1f9219807933",
+  "shortId" : "OI84WmVv",
+  "realUrl" : "https://www.google.com",
+  "xremovalToken" : "35d4cd881e0544ef9681b6bc18cbbbf5"
 } ]
