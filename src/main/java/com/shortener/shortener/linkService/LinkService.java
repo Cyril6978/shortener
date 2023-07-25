@@ -1,57 +1,27 @@
-package com.shortener.shortener.linkService;
+package com.shortener.shortener.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shortener.shortener.entity.Shortener;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import java.util.Random;
 @Service
-public class LinkService {
+public class ShortenerService {
 
-    private static final String FILE_PATH = "src/main/resources/links.json";
-
-    private List<Shortener> links;
-
-    public LinkService() {
-        this.links = loadFromFile();
-    }
-
-    public List<Shortener> getAllLinks() {
-        return links;
-    }
-
-    public void addLink(Shortener shortener) {
-        // Générer manuellement l'ID pour l'objet Shortener
-        shortener.setId(UUID.randomUUID());
-        links.add(shortener);
-        saveToFile();
-    }
-
-    // Utiliser Jackson pour lire les données depuis le fichier JSON et les charger dans la liste
-    private List<Shortener> loadFromFile() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(new File(FILE_PATH), new TypeReference<List<Shortener>>() {
-            });
-        } catch (IOException e) {
-            return new ArrayList<>(); // Si le fichier n'existe pas ou est vide, retourner une liste vide
+    public String generateShortId(){
+        String str="";
+        Random rand = new Random();
+        String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        int longueur = alphabet.length();
+        for(int i = 0; i < 8; i++) {
+            int k = rand.nextInt(longueur);
+            str = str + alphabet.charAt(k);
         }
-    }
+        return str;
+//    Base64.Encoder encoder = Base64.getUrlEncoder();
+//    SecureRandom random = new SecureRandom();
+//    byte[] array = new byte[6]; // length is bounded 8
+//    random.nextBytes(array);
+//    return encoder.encodeToString(array);
 
-    // Utiliser Jackson pour écrire les données de la liste dans le fichier JSON
-    private void saveToFile() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            objectMapper.writeValue(new File(FILE_PATH), links);
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Gérer l'erreur d'écriture du fichier ici si nécessaire
-        }
+
     }
 }
