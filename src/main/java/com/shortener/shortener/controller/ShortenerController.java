@@ -2,6 +2,7 @@ package com.shortener.shortener.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.shortener.shortener.entity.Shortener;
 import com.shortener.shortener.service.ShortenerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class ShortenerController {
         shortener.setShortId(shortenerService.generateShortId());
         File file = new File("src/main/resources/links.json");
         ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {});
         for(int i = 0; i < myDataList.size(); i++){
             if(myDataList.get(i).getShortId()==shortener.getShortId()){
