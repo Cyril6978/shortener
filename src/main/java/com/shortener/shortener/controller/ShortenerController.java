@@ -30,7 +30,7 @@ public class ShortenerController {
         shortener.setId(UUID.randomUUID());
         shortener.setShortId(shortenerService.generateShortId());
 
-        String xRemovalToken = generateXRemovalToken(); //
+        String xRemovalToken = shortenerService.generateXRemovalToken();
         shortener.setXRemovalToken(xRemovalToken);
 
 
@@ -51,9 +51,7 @@ public class ShortenerController {
         return shortener;
     }
 
-    private String generateXRemovalToken(){
-        return UUID.randomUUID().toString().replaceAll("-","");
-    }
+
 
     @GetMapping("/{shortId}")
     public ResponseEntity<String> getOriginalUrl(@PathVariable String shortId) throws IOException{

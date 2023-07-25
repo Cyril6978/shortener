@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.UUID;
+
 @Service
 public class ShortenerService {
 
@@ -18,5 +20,9 @@ public class ShortenerService {
             str = str + ALPHABET.charAt(k);
         }
         return str;
+    }
+
+    public String generateXRemovalToken(){
+        return UUID.randomUUID().toString().replaceAll("-","");
     }
 }
