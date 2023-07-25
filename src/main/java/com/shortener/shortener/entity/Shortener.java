@@ -1,5 +1,8 @@
 package com.shortener.shortener.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,18 +14,22 @@ import java.util.UUID;
 public class Shortener {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.UUID)
+
     private UUID id;
     private String shortId;
     private String realUrl;
+
+    private String xRemovalToken;
     public Shortener(){}
 
 
 
-    public Shortener(UUID id, String shortId, String realUrl) {
+    public Shortener(UUID id, String shortId, String realUrl, String xRemovalToken) {
+
         this.id = id;
         this.shortId = shortId;
         this.realUrl = realUrl;
+        this.xRemovalToken = xRemovalToken;
     }
 
 
@@ -52,4 +59,14 @@ public class Shortener {
     public void setRealUrl(String realUrl) {
         this.realUrl = realUrl;
     }
+
+
+    public String getxRemovalToken() {
+        return xRemovalToken;
+    }
+
+    public void setxRemovalToken(String xRemovalToken) {
+        this.xRemovalToken = xRemovalToken;
+    }
 }
+

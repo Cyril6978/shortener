@@ -1,1 +1,12 @@
-[{"id":null,"shortId":"dhgretshs","realUrl":"dfswgredg"},{"id":"f70d6876-b2b7-41db-8a30-9a329819698f","shortId":"7EJeZKMW","realUrl":"https://www.youtube.com/watch?v=F71BUW8PFuE"}]
+[ {
+  "id" : "2375cc95-73cc-4213-9fa2-36e43bedfdf6",
+  "shortId" : "j1CkvIvK",
+  "realUrl" : "http://google.com",
+  "xRemovalToken" : "Coucou"
+}, {
+  "id" : "f784410b-5ee3-4281-9552-3e78a189328f",
+  "shortId" : "s9iozmNS",
+  "realUrl" : "http://google.com",
+  "xRemovalToken" : "Coucou"
+} ]
+
