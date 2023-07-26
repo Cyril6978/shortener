@@ -1,12 +1,8 @@
 package com.shortener.shortener.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.util.UUID;
 
@@ -20,8 +16,9 @@ public class Shortener {
     private String realUrl;
 
     private String xRemovalToken;
-    public Shortener(){}
 
+    public Shortener() {
+    }
 
 
     public Shortener(UUID id, String shortId, String realUrl, String xRemovalToken) {
@@ -50,8 +47,6 @@ public class Shortener {
     }
 
 
-
-
     public String getRealUrl() {
         return realUrl;
     }
@@ -65,8 +60,8 @@ public class Shortener {
         return xRemovalToken;
     }
 
-    public void setxRemovalToken(String xRemovalToken) {
-        this.xRemovalToken = xRemovalToken;
+    public String setxRemovalToken(String xRemovalToken) {
+        return Base64.encodeBase64String(UUID.randomUUID().toString().getBytes());
     }
 }
 
