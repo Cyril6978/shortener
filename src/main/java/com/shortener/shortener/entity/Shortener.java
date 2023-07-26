@@ -60,8 +60,9 @@ public class Shortener {
         return xRemovalToken;
     }
 
-    public String setxRemovalToken(String xRemovalToken) {
-        return Base64.encodeBase64String(UUID.randomUUID().toString().getBytes());
+    public void setxRemovalToken(String xRemovalToken) {
+        this.xRemovalToken = xRemovalToken;
+
     }
 }
 

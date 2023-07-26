@@ -1,26 +1,8 @@
-[ {
-  "id" : "2375cc95-73cc-4213-9fa2-36e43bedfdf6",
-  "shortId" : "j1CkvIvK",
-  "realUrl" : "http://google.com",
-  "xRemovalToken" : null
-}, {
-  "id" : "f784410b-5ee3-4281-9552-3e78a189328f",
-  "shortId" : "s9iozmNS",
-  "realUrl" : "http://google.com",
-  "xRemovalToken" : null
-}, {
-  "id" : "dc85c6b9-89cc-431f-8acb-272517f422ee",
-  "shortId" : "PJfn7aDF",
-  "realUrl" : "https://m.youtube.com/watch?v=iWVPUM9HsNE",
-  "xRemovalToken" : null
-}, {
-  "id" : "4a2c84f1-b548-49e4-9475-508138ff514f",
-  "shortId" : "9QPugMZk",
-  "realUrl" : "https://m.youtube.com/watch?v=iWVPUM9HsNE",
-  "xRemovalToken" : null
-}, {
-  "id" : "dff51483-f479-4c64-9afe-deec477a0e03",
-  "shortId" : "Ukz5CU1c",
-  "realUrl" : "https://m.youtube.com/watch?v=iWVPUM9HsNE",
-  "xRemovalToken" : null
-} ]
+[
+  {
+    "id": "4417e0e3-3e7f-4ff5-9271-185dcf29286b",
+    "shortId": "wwp3q4Dq",
+    "realUrl": "https://m.youtube.com/watch?v=iWVPUM9HsNE",
+    "xRemovalToken": "ba04f605560046da9d7273f74c740add"
+  }
+]
