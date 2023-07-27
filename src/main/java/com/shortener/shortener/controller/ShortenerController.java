@@ -45,6 +45,7 @@ public class ShortenerController {
         shortener.setShortId(shortenerService.generateShortId());
         shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
         response.setHeader("generate x removal", shortener.getxRemovalToken());
+
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
