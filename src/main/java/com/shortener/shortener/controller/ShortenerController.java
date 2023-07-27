@@ -85,10 +85,16 @@ public class ShortenerController {
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
+        if (myDataList.stream().filter(
+                myObj -> myObj.getId().equals(id)).findFirst().isEmpty()) {
+            return new ResponseEntity<>("Shortener is not find", HttpStatus.NOT_FOUND);
+        }
         Shortener shortenerToDisplay = myDataList.stream().filter(
                 myObj -> myObj.getId().equals(id)).findFirst().get();
+
 
         if (shortenerToDisplay.getxRemovalToken().equals(removalToken)) {
             myDataList.remove(shortenerToDisplay);
@@ -97,7 +103,7 @@ public class ShortenerController {
             return new ResponseEntity<>("Shortener deleted successfully", HttpStatus.OK);
         }
 
-        return new ResponseEntity<>("Shortener is not deleted", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Shortener is not deleted", HttpStatus.FORBIDDEN);
     }
 
 }
