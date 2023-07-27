@@ -13,13 +13,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.UUID;
 
 //@ControllerAdvice
 @RestController
@@ -79,6 +82,25 @@ public class ShortenerController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
+    @Scheduled(cron = "${cron}") //rafraichissement toutes les minutes
+    public void deleteExpiredShorteners() throws IOException {
+        File file = new File(filePath);
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
+        });
+
+
+        // Supprimer les shorteners expirés
+        myDataList.removeIf(shortener -> {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+            LocalDateTime creationDate = LocalDateTime.parse(shortener.getCreationDate(), formatter);
+            return creationDate.plusDays(30).isBefore(LocalDateTime.now());
+        });
+
+        // maj du fichier
+        objectMapper.writeValue(file, myDataList);
+
+    }
 
     @DeleteMapping("/links/{id}")
     public ResponseEntity<?> deleteShortener(@PathVariable UUID id, @RequestHeader("xRemovalToken") String removalToken) throws IOException {
