@@ -69,6 +69,10 @@ public class Shortener {
         return creationDate;
     }
 
+    public void setCreationDate(String creationDate) {
+        this.creationDate = LocalDateTime.parse(creationDate, formatter);
+    }
+
     public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
