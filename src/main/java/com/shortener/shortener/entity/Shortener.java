@@ -1,9 +1,6 @@
 package com.shortener.shortener.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,15 +16,17 @@ public class Shortener {
     private String xRemovalToken;
 
 
-    public Shortener(){
 
-    }
 
     public Shortener(UUID id, String shortId, String realUrl) {
         this.id = id;
         this.shortId = shortId;
         this.realUrl = realUrl;
         this.xRemovalToken = xRemovalToken;
+    }
+
+    public Shortener() {
+
     }
 
     public UUID getId() {
