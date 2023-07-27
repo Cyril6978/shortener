@@ -72,12 +72,15 @@ public class ShortenerController {
 
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
-        String shortenerToDisplay = myDataList.stream().filter(
+        Shortener shortenerToDisplay = myDataList.stream().filter(
                 myObj -> myObj.getShortId().equals(shortId)
-        ).findFirst().get().getRealUrl();
+        ).findFirst().get();
 
+        shortenerToDisplay.setCreationDate(LocalDateTime.now());
+        objectMapper.writeValue(file, myDataList);
+        
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(shortenerToDisplay));
+        headers.setLocation(URI.create(shortenerToDisplay.getRealUrl()));
 
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
