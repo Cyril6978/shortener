@@ -5,6 +5,8 @@ import com.shortener.shortener.entity.Shortener;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 import java.util.UUID;
 
@@ -13,11 +15,11 @@ public class ShortenerService {
 
     public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    public String generateShortId(){
-        String str="";
+    public String generateShortId() {
+        String str = "";
         SecureRandom rand = new SecureRandom();
         int longueur = ALPHABET.length();
-        for(int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             int k = rand.nextInt(longueur);
             str = str + ALPHABET.charAt(k);
         }
@@ -28,12 +30,14 @@ public class ShortenerService {
 //    random.nextBytes(array);
 //    return encoder.encodeToString(array);
     }
-    public Boolean startWithHttpOrHttps(String realUrl){
-    if(realUrl.substring(0,4).equals("http")) {
-        return true;
+
+    public Boolean startWithHttpOrHttps(String realUrl) {
+        if (realUrl.substring(0, 4).equals("http")) {
+            return true;
+        }
+        return false;
     }
-    return false;
-    }
+
     public ShortenerDto TransformShortenerEntityInShortenerDto(Shortener shortener) {
         ShortenerDto shortenerDto = new ShortenerDto();
         shortenerDto.setId(shortener.getId());
@@ -42,7 +46,14 @@ public class ShortenerService {
         // Récupere et ajoute au DTO toutes les propriétés que tu auras déclarées des 2 côtés
         return shortenerDto;
     }
-    public String generateXRemovalToken(){
-        return UUID.randomUUID().toString().replaceAll("-","");
+
+    public String generateXRemovalToken() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
+    public String generateCreationDate() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+        return now.format(formatter);
     }
 }
