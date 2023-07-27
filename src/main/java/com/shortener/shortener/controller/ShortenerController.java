@@ -100,7 +100,7 @@ public class ShortenerController {
             myDataList.remove(shortenerToDisplay);
             objectMapper.writeValue(file, myDataList);
 
-            return new ResponseEntity<>("Shortener deleted successfully", HttpStatus.OK);
+            return new ResponseEntity<>("Shortener deleted successfully", HttpStatus.NO_CONTENT);
         }
 
         return new ResponseEntity<>("Shortener is not deleted", HttpStatus.FORBIDDEN);
