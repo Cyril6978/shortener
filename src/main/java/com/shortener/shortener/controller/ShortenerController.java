@@ -89,6 +89,7 @@ public class ShortenerController {
     public void deleteExpiredShorteners() throws IOException {
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
 
@@ -116,6 +117,8 @@ public class ShortenerController {
         });
         if (myDataList.stream().filter(
                 myObj -> myObj.getId().equals(id)).findFirst().isEmpty()) {
+            System.out.print(myDataList.stream().filter(
+                    myObj -> myObj.getId().equals(id)).findFirst().isPresent());
             return new ResponseEntity<>("Shortener is not find", HttpStatus.NOT_FOUND);
         }
         Shortener shortenerToDisplay = myDataList.stream().filter(
@@ -131,6 +134,4 @@ public class ShortenerController {
 
         return new ResponseEntity<>("Shortener is not deleted", HttpStatus.FORBIDDEN);
     }
-
-
 }
