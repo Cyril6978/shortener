@@ -18,12 +18,13 @@ public class Shortener {
     private String xRemovalToken;
     private LocalDateTime creationDate;
 
+
     public Shortener() {
     }
 
+
     @Transient
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-
 
     public Shortener(UUID id, String shortId, String realUrl, String xRemovalToken, String creationDate) {
 
@@ -70,6 +71,7 @@ public class Shortener {
         this.xRemovalToken = xRemovalToken;
 
     }
+
 
     public String getCreationDate() {
         return formatter.format(creationDate);

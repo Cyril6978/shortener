@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Random;
 import java.util.UUID;
 
 @Service
 public class ShortenerService {
+
 
     public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -49,11 +49,16 @@ public class ShortenerService {
 
     public String generateXRemovalToken() {
         return UUID.randomUUID().toString().replaceAll("-", "");
+
     }
+
 
     public String generateCreationDate() {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
         return now.format(formatter);
     }
+
+    // Méthode pour charger les données depuis le fichier links.json
+
 }
