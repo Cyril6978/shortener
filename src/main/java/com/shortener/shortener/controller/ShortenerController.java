@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.shortener.shortener.dto.ShortenerDto;
 import com.shortener.shortener.entity.Shortener;
+import com.shortener.shortener.entity.Error;
 import com.shortener.shortener.service.ShortenerService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,17 @@ public class ShortenerController {
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     //@ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity<?>createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
 
        if (!shortenerService.startWithHttpOrHttpsOrWww(shortener.getRealUrl())) {
-          // response.setHeader("generate x removal", "null");
+
+//           Error newErrorToSave = new Error();
+//           newErrorToSave.setMethod();
+//           newErrorToSave.setPathHttp("");
+//           newErrorToSave.setAdressIp();
+//           newErrorToSave.setTypeOfError("400 : bad request");
+
+
 
            return new ResponseEntity<>("invalid url",HttpStatus.BAD_REQUEST);
         }
@@ -58,7 +66,7 @@ public class ShortenerController {
         for (int i = 0; i < myDataList.size(); i++) {
             if (myDataList.get(i).getShortId().equals(shortener.getShortId())) {
                 shortener.setShortId(shortenerService.generateShortId());
-                //i = -1;
+                i = -1;
             }
         }
         myDataList.add(shortener);
