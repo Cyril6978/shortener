@@ -65,8 +65,9 @@ public class Shortener {
         this.xRemovalToken = xRemovalToken;
     }
 
-    public LocalDateTime getCreationDate() {
-        return creationDate;
+
+    public String getCreationDate() {
+        return formatter.format(creationDate);
     }
 
     public void setCreationDate(String creationDate) {
@@ -77,11 +78,4 @@ public class Shortener {
         this.creationDate = creationDate;
     }
 
-    public DateTimeFormatter getFormatter() {
-        return formatter;
-    }
-
-    public void setFormatter(DateTimeFormatter formatter) {
-        this.formatter = formatter;
-    }
 }

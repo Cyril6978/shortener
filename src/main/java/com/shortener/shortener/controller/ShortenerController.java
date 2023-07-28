@@ -38,15 +38,13 @@ public class ShortenerController {
     public ShortenerDto createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
 
         if (!shortenerService.startWithHttpOrHttps(shortener.getRealUrl())) {
-            // return new ShortenerDto();
             throw new RuntimeException("Erreur 400: invalid url");
-            //HttpStatus s = HttpStatus.BAD_REQUEST.is4xxClientError();
-            //throw new ResourceException(HttpStatus.BAD_REQUEST, "My message");
-            //return HttpStatus.BAD_REQUEST;
+
         }
         shortener.setId(UUID.randomUUID());
         shortener.setShortId(shortenerService.generateShortId());
         shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
+        shortener.setCreationDate(shortenerService.generateCreationDate());
         response.setHeader("generate x removal", shortener.getxRemovalToken());
 
         File file = new File(filePath);
@@ -85,6 +83,7 @@ public class ShortenerController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
+    //tache planifiée
     @Scheduled(cron = "${cron}") //rafraichissement toutes les minutes
     public void deleteExpiredShorteners() throws IOException {
         File file = new File(filePath);

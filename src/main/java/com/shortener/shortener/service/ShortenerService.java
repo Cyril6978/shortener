@@ -1,14 +1,24 @@
 package com.shortener.shortener.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.shortener.shortener.dto.ShortenerDto;
 import com.shortener.shortener.entity.Shortener;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ShortenerService {
+
 
     public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -48,5 +58,12 @@ public class ShortenerService {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
+    public String generateCreationDate() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+        return now.format(formatter);
+    }
+
+    // Méthode pour charger les données depuis le fichier links.json
 
 }
