@@ -38,11 +38,11 @@ public class ShortenerService {
 //    return encoder.encodeToString(array);
     }
 
-    public Boolean startWithHttpOrHttps(String realUrl) {
-        if (realUrl.substring(0, 4).equals("http")) {
+    public Boolean startWithHttpOrHttpsOrWww(String realUrl) {
+        if (realUrl.substring(0, 4).equals("http") && realUrl.substring(7, 10).equals("www") || realUrl.substring(8, 11).equals("www")) {
             return true;
         }
-        return false;
+       return false;
     }
 
     public ShortenerDto TransformShortenerEntityInShortenerDto(Shortener shortener) {

@@ -34,13 +34,15 @@ public class ShortenerController {
     private String filePath;
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public ShortenerDto createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
+    //@ResponseStatus(code = HttpStatus.CREATED)
+    public ResponseEntity<?>createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
 
-        if (!shortenerService.startWithHttpOrHttps(shortener.getRealUrl())) {
-            throw new RuntimeException("Erreur 400: invalid url");
+       if (!shortenerService.startWithHttpOrHttpsOrWww(shortener.getRealUrl())) {
+          // response.setHeader("generate x removal", "null");
 
+           return new ResponseEntity<>("invalid url",HttpStatus.BAD_REQUEST);
         }
+
         shortener.setId(UUID.randomUUID());
         shortener.setShortId(shortenerService.generateShortId());
         shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
@@ -52,6 +54,7 @@ public class ShortenerController {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
+
         for (int i = 0; i < myDataList.size(); i++) {
             if (myDataList.get(i).getShortId().equals(shortener.getShortId())) {
                 shortener.setShortId(shortenerService.generateShortId());
@@ -60,7 +63,7 @@ public class ShortenerController {
         }
         myDataList.add(shortener);
         objectMapper.writeValue(file, myDataList);
-        return shortenerService.TransformShortenerEntityInShortenerDto(shortener);
+        return new ResponseEntity<>(shortenerService.TransformShortenerEntityInShortenerDto(shortener), HttpStatus.CREATED);
     }
 
     @GetMapping("/{shortId}")
@@ -88,6 +91,7 @@ public class ShortenerController {
     public void deleteExpiredShorteners() throws IOException {
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
 
