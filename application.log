@@ -1,5 +1,0 @@
-2023-07-31 10:30:51,667 [http-nio-8080-exec-3] ERROR c.s.s.service.ShortenerService - createUrl real URL from , Error 400:L'adresse invalide (Shortener controller => 44)
-2023-07-31 10:40:53,193 [http-nio-8080-exec-2] ERROR c.s.s.service.ShortenerService - deleteShortener real URL from , Error 404:Suppression impossible, ressource non trouvé. (Shortener controller => 44)
-2023-07-31 10:41:37,229 [http-nio-8080-exec-3] ERROR c.s.s.service.ShortenerService - deleteShortener real URL from , Error 403:Token incorrect. (Shortener controller => 44)
-2023-07-31 10:45:39,116 [http-nio-8080-exec-1] ERROR c.s.s.service.ShortenerService - createUrl real URL from null, Error 400:L'adresse invalide (Shortener controller => 44)
-2023-07-31 10:52:05,784 [http-nio-8080-exec-2] ERROR c.s.s.service.ShortenerService - createUrl real URL from 0:0:0:0:0:0:0:1, Error 400:L'adresse invalide (Shortener controller => 44)
