@@ -48,7 +48,7 @@ public class ShortenerController {
             Error error400 = new Error();
             String ipAddress = request.getRemoteAddr();
             error400.setMethod("createUrl");
-            error400.setPathHttp("real URL");
+            error400.setPathHttp(shortener.getRealUrl());
             error400.setAdressIp(ipAddress);
             error400.setTypeOfError("Error 400");
             error400.setFileSrc("Shortener controller");
@@ -142,7 +142,8 @@ public class ShortenerController {
 
             error404.setMethod("deleteShortener");
             String ipAddress = request.getRemoteAddr();
-            error404.setPathHttp("real URL");
+            error404.setPathHttp(myDataList.stream().filter(
+                    myObj -> myObj.getId().equals(id)).findFirst().get().getRealUrl());
             error404.setAdressIp(ipAddress);
             error404.setTypeOfError("Error 404");
             error404.setFileSrc("Shortener controller");
@@ -168,7 +169,8 @@ public class ShortenerController {
 
         error403.setMethod("deleteShortener");
         String ipAddress = request.getRemoteAddr();
-        error403.setPathHttp("real URL");
+        error403.setPathHttp(myDataList.stream().filter(
+                myObj -> myObj.getId().equals(id)).findFirst().get().getRealUrl());
         error403.setAdressIp(ipAddress);
         error403.setTypeOfError("Error 403");
         error403.setFileSrc("Shortener controller");
