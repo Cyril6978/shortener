@@ -1,0 +1,1 @@
+2023-07-31 11:24:12,496 [http-nio-8080-exec-1] ERROR c.s.s.service.ShortenerService - createUrl iyhgvocyufeqlfd from 0:0:0:0:0:0:0:1, Error 400:L'adresse invalide (Shortener controller => 44)
