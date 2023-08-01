@@ -42,7 +42,6 @@ public class ShortenerController {
     public ResponseEntity<?> createUrl(@RequestBody Shortener shortener, HttpServletResponse response, HttpServletRequest request) throws IOException {
         try {
             if (!shortenerService.startWithHttpOrHttpsOrWww(shortener.getRealUrl())) {
-
                 throw new InvalidUrlException();
             }
 
@@ -69,15 +68,15 @@ public class ShortenerController {
             objectMapper.writeValue(file, myDataList);
             return new ResponseEntity<>(shortenerService.TransformShortenerEntityInShortenerDto(shortener), HttpStatus.CREATED);
         } catch (InvalidUrlException e) {
-            int lineNumber = e.getStackTrace()[0].getLineNumber();
+            int lineNumber = e.getStackTrace()[0].getLineNumber() - 1;
 
             LogErrMessage error400 = new LogErrMessage();
             String ipAddress = request.getRemoteAddr();
-            error400.setMethod("createUrl");
+            error400.setMethod(e.getStackTrace()[0].getMethodName());
             error400.setPathHttp(shortener.getRealUrl());
             error400.setAdressIp(ipAddress);
             error400.setTypeOfError("Error 400");
-            error400.setFileSrc("Shortener controller");
+            error400.setFileSrc(e.getStackTrace()[0].getFileName());
             error400.setLine(lineNumber);
             error400.setMessageError("L'adresse est invalide");
 
