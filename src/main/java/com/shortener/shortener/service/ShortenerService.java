@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,8 +35,10 @@ public class ShortenerService {
 //    return encoder.encodeToString(array);
     }
 
-    public Boolean startWithHttpOrHttpsOrWww(String realUrl) {
-        if (realUrl.substring(0, 4).equals("http") && realUrl.substring(7, 10).equals("www") || realUrl.substring(8, 11).equals("www")) {
+    public Boolean startWithHttpOrHttpsAndNotShortUrl(String realUrl, List<Shortener> shortenerList) {
+        String endOfUrl = realUrl.substring(realUrl.length() - 8, realUrl.length());
+
+        if (realUrl.substring(0, 4).equals("http") && shortenerList.stream().filter(myobj -> myobj.getShortId().equals(endOfUrl)).findFirst().isEmpty()) {
             return true;
         }
         return false;

@@ -3,12 +3,13 @@ package com.shortener.shortener.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.shortener.shortener.entity.LogErrMessage;
+import com.shortener.shortener.dto.ShortenerDto;
 import com.shortener.shortener.entity.Shortener;
+import com.shortener.shortener.exception.InvalidRemovalTokenException;
+import com.shortener.shortener.exception.InvalidShortenerIdException;
 import com.shortener.shortener.exception.InvalidUrlException;
 import com.shortener.shortener.exception.ShortenerNotFoundException;
 import com.shortener.shortener.service.ShortenerService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,51 +40,35 @@ public class ShortenerController {
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     //@ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity<?> createUrl(@RequestBody Shortener shortener, HttpServletResponse response, HttpServletRequest request) throws IOException {
-        try {
-            if (!shortenerService.startWithHttpOrHttpsOrWww(shortener.getRealUrl())) {
-                throw new InvalidUrlException();
-            }
+    public ResponseEntity<ShortenerDto> createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
 
-            shortener.setId(UUID.randomUUID());
-            shortener.setShortId(shortenerService.generateShortId());
-            shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
-            shortener.setCreationDate(shortenerService.generateCreationDate());
-            response.setHeader("generate x removal", shortener.getxRemovalToken());
-
-            File file = new File(filePath);
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-            List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
-            });
-
-            for (int i = 0; i < myDataList.size(); i++) {
-                if (myDataList.get(i).getShortId().equals(shortener.getShortId())) {
-                    shortener.setShortId(shortenerService.generateShortId());
-                    i = -1;
-                }
-            }
-
-            myDataList.add(shortener);
-            objectMapper.writeValue(file, myDataList);
-            return new ResponseEntity<>(shortenerService.TransformShortenerEntityInShortenerDto(shortener), HttpStatus.CREATED);
-        } catch (InvalidUrlException e) {
-            int lineNumber = e.getStackTrace()[0].getLineNumber() - 1;
-
-            LogErrMessage error400 = new LogErrMessage();
-            String ipAddress = request.getRemoteAddr();
-            error400.setMethod(e.getStackTrace()[0].getMethodName());
-            error400.setPathHttp(shortener.getRealUrl());
-            error400.setAdressIp(ipAddress);
-            error400.setTypeOfError("Error 400");
-            error400.setFileSrc(e.getStackTrace()[0].getFileName());
-            error400.setLine(lineNumber);
-            error400.setMessageError("L'adresse est invalide");
-
-            shortenerService.generateErrorMessage(error400);
-
-            return new ResponseEntity<>("invalid url", HttpStatus.BAD_REQUEST);
+        File file = new File(filePath);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
+        });
+        if (!shortenerService.startWithHttpOrHttpsAndNotShortUrl(shortener.getRealUrl(), myDataList)) {
+            throw new InvalidUrlException();
         }
+
+        shortener.setId(UUID.randomUUID());
+        shortener.setShortId(shortenerService.generateShortId());
+        shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
+        shortener.setCreationDate(shortenerService.generateCreationDate());
+        response.setHeader("generate x removal", shortener.getxRemovalToken());
+
+
+        for (int i = 0; i < myDataList.size(); i++) {
+            if (myDataList.get(i).getShortId().equals(shortener.getShortId())) {
+                shortener.setShortId(shortenerService.generateShortId());
+                i = -1;
+            }
+        }
+
+        myDataList.add(shortener);
+        objectMapper.writeValue(file, myDataList);
+        return new ResponseEntity<>(shortenerService.TransformShortenerEntityInShortenerDto(shortener), HttpStatus.CREATED);
+
     }
 
     @GetMapping("/{shortId}")
@@ -130,7 +115,7 @@ public class ShortenerController {
     }
 
     @DeleteMapping("/links/{id}")
-    public ResponseEntity<?> deleteShortener(@PathVariable UUID id, @RequestHeader("xRemovalToken") String removalToken, HttpServletRequest request) throws IOException {
+    public ResponseEntity<String> deleteShortener(@PathVariable UUID id, @RequestHeader("xRemovalToken") String removalToken) throws IOException {
         // response.getHeader()
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -138,51 +123,25 @@ public class ShortenerController {
 
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
+
         if (myDataList.stream().filter(
                 myObj -> myObj.getId().equals(id)).findFirst().isEmpty()) {
-
-            LogErrMessage error404 = new LogErrMessage();
-
-            error404.setMethod("deleteShortener");
-            String ipAddress = request.getRemoteAddr();
-            error404.setPathHttp(myDataList.stream().filter(
-                    myObj -> myObj.getId().equals(id)).findFirst().get().getRealUrl());
-            error404.setAdressIp(ipAddress);
-            error404.setTypeOfError("Error 404");
-            error404.setFileSrc("Shortener controller");
-            error404.setLine(137);
-            error404.setMessageError("Suppression impossible, ressource non trouvé.");
-
-            shortenerService.generateErrorMessage(error404);
-
-            return new ResponseEntity<>("Shortener is not find", HttpStatus.NOT_FOUND);
+            throw new InvalidShortenerIdException();
         }
+
         Shortener shortenerToDisplay = myDataList.stream().filter(
                 myObj -> myObj.getId().equals(id)).findFirst().get();
 
 
-        if (shortenerToDisplay.getxRemovalToken().equals(removalToken)) {
+        if (!shortenerToDisplay.getxRemovalToken().equals(removalToken)) {
+            throw new InvalidRemovalTokenException();
+        } else {
             myDataList.remove(shortenerToDisplay);
             objectMapper.writeValue(file, myDataList);
 
-            return new ResponseEntity<>("Shortener deleted successfully", HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        LogErrMessage error403 = new LogErrMessage();
-
-        error403.setMethod("deleteShortener");
-        String ipAddress = request.getRemoteAddr();
-        error403.setPathHttp(myDataList.stream().filter(
-                myObj -> myObj.getId().equals(id)).findFirst().get().getRealUrl());
-        error403.setAdressIp(ipAddress);
-        error403.setTypeOfError("Error 403");
-        error403.setFileSrc("Shortener controller");
-        error403.setLine(158);
-        error403.setMessageError("Token incorrect.");
-
-        shortenerService.generateErrorMessage(error403);
-
-        return new ResponseEntity<>("Shortener is not deleted", HttpStatus.FORBIDDEN);
     }
 
 }
