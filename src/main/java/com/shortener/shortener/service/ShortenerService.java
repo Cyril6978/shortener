@@ -1,7 +1,7 @@
 package com.shortener.shortener.service;
 
 import com.shortener.shortener.dto.ShortenerDto;
-import com.shortener.shortener.entity.Error;
+import com.shortener.shortener.entity.LogErrMessage;
 import com.shortener.shortener.entity.Shortener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,11 +63,9 @@ public class ShortenerService {
     }
 
     // Méthode pour charger les données depuis le fichier links.json
-    public void generateErrorMessage(Error error) {
+    public void generateErrorMessage(LogErrMessage logErrMessage) {
         //méthode> <chemin HTTP> from <addresse IP source>, <type de l'erreur>: <message d'erreur> (<fichier source> => <ligne de code>)
-
-        logger.error(error.getMethod() + " " + error.getPathHttp() + " from " + error.getAdressIp() + ", "
-                + error.getTypeOfError() + ":" + error.getMessageError() + " (" + error.getFileSrc() + " => " + error.getLine() + ")");
+        logger.error(logErrMessage.toString());
 
     }
 

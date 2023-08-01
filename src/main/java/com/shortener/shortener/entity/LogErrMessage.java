@@ -1,6 +1,6 @@
 package com.shortener.shortener.entity;
 
-public class Error {
+public class LogErrMessage {
 
     public String method;
     public String pathHttp;
@@ -9,9 +9,11 @@ public class Error {
     public String messageError;
     public String fileSrc;
     public Integer line;
-    public Error(){}
 
-    public Error(String method, String pathHttp, String adressIp, String typeOfError, String messageError, String fileSrc, Integer line) {
+    public LogErrMessage() {
+    }
+
+    public LogErrMessage(String method, String pathHttp, String adressIp, String typeOfError, String messageError, String fileSrc, Integer line) {
         this.method = method;
         this.pathHttp = pathHttp;
         this.adressIp = adressIp;
@@ -75,5 +77,12 @@ public class Error {
 
     public void setLine(Integer line) {
         this.line = line;
+    }
+
+    @Override
+    public String toString() {
+        return this.getMethod() + " " + this.getPathHttp() + " from " + this.getAdressIp() + ", "
+                + this.getTypeOfError() + ":" + this.getMessageError() + " (" + this.getFileSrc() + " => " + this.getLine() + ")";
+
     }
 }
