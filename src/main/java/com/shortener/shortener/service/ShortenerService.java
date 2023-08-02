@@ -1,15 +1,12 @@
 package com.shortener.shortener.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.shortener.shortener.dto.ShortenerDto;
+import com.shortener.shortener.entity.LogErrMessage;
 import com.shortener.shortener.entity.Shortener;
-import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +16,7 @@ import java.util.UUID;
 @Service
 public class ShortenerService {
 
-
+    Logger logger = LoggerFactory.getLogger(ShortenerService.class);
     public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public String generateShortId() {
@@ -38,8 +35,10 @@ public class ShortenerService {
 //    return encoder.encodeToString(array);
     }
 
-    public Boolean startWithHttpOrHttps(String realUrl) {
-        if (realUrl.substring(0, 4).equals("http")) {
+    public Boolean startWithHttpOrHttpsAndNotShortUrl(String realUrl, List<Shortener> shortenerList) {
+        String endOfUrl = realUrl.substring(realUrl.length() - 8, realUrl.length());
+
+        if (realUrl.substring(0, 4).equals("http") && shortenerList.stream().filter(myobj -> myobj.getShortId().equals(endOfUrl)).findFirst().isEmpty()) {
             return true;
         }
         return false;
@@ -56,7 +55,9 @@ public class ShortenerService {
 
     public String generateXRemovalToken() {
         return UUID.randomUUID().toString().replaceAll("-", "");
+
     }
+
 
     public String generateCreationDate() {
         LocalDateTime now = LocalDateTime.now();
@@ -65,5 +66,10 @@ public class ShortenerService {
     }
 
     // Méthode pour charger les données depuis le fichier links.json
+    public void generateErrorMessage(LogErrMessage logErrMessage) {
+        //méthode> <chemin HTTP> from <addresse IP source>, <type de l'erreur>: <message d'erreur> (<fichier source> => <ligne de code>)
+        logger.error(logErrMessage.toString());
+
+    }
 
 }

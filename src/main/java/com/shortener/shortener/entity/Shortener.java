@@ -1,8 +1,6 @@
 package com.shortener.shortener.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,8 +8,9 @@ import java.util.UUID;
 
 @Entity
 public class Shortener {
-    @Id
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String shortId;
     private String realUrl;
@@ -19,19 +18,24 @@ public class Shortener {
     private String xRemovalToken;
     private LocalDateTime creationDate;
 
+
     public Shortener() {
     }
+
 
     @Transient
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
 
     public Shortener(UUID id, String shortId, String realUrl, String xRemovalToken, String creationDate) {
+
         this.id = id;
         this.shortId = shortId;
         this.realUrl = realUrl;
         this.xRemovalToken = xRemovalToken;
         this.creationDate = LocalDateTime.parse(creationDate, formatter);
+
     }
+
 
     public UUID getId() {
         return id;
@@ -49,6 +53,7 @@ public class Shortener {
         this.shortId = shortId;
     }
 
+
     public String getRealUrl() {
         return realUrl;
     }
@@ -57,12 +62,14 @@ public class Shortener {
         this.realUrl = realUrl;
     }
 
+
     public String getxRemovalToken() {
         return xRemovalToken;
     }
 
     public void setxRemovalToken(String xRemovalToken) {
         this.xRemovalToken = xRemovalToken;
+
     }
 
 
@@ -78,4 +85,6 @@ public class Shortener {
         this.creationDate = creationDate;
     }
 
+
 }
+

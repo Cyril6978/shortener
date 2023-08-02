@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.shortener.shortener.dto.ShortenerDto;
 import com.shortener.shortener.entity.Shortener;
+import com.shortener.shortener.exception.InvalidRemovalTokenException;
+import com.shortener.shortener.exception.InvalidShortenerIdException;
+import com.shortener.shortener.exception.InvalidUrlException;
+import com.shortener.shortener.exception.ShortenerNotFoundException;
 import com.shortener.shortener.service.ShortenerService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,39 +33,43 @@ import java.util.UUID;
 @RestController
 public class ShortenerController {
 
+
     @Autowired
     private ShortenerService shortenerService;
     @Value("${json.file.path}")
     private String filePath;
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public ShortenerDto createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
-
-        if (!shortenerService.startWithHttpOrHttps(shortener.getRealUrl())) {
-            throw new RuntimeException("Erreur 400: invalid url");
-
-        }
-        shortener.setId(UUID.randomUUID());
-        shortener.setShortId(shortenerService.generateShortId());
-        shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
-        shortener.setCreationDate(shortenerService.generateCreationDate());
-        response.setHeader("generate x removal", shortener.getxRemovalToken());
+    //@ResponseStatus(code = HttpStatus.CREATED)
+    public ResponseEntity<ShortenerDto> createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
 
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
+        if (!shortenerService.startWithHttpOrHttpsAndNotShortUrl(shortener.getRealUrl(), myDataList)) {
+            throw new InvalidUrlException();
+        }
+
+        shortener.setId(UUID.randomUUID());
+        shortener.setShortId(shortenerService.generateShortId());
+        shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
+        shortener.setCreationDate(shortenerService.generateCreationDate());
+        response.setHeader("generate x removal", shortener.getxRemovalToken());
+
+
         for (int i = 0; i < myDataList.size(); i++) {
             if (myDataList.get(i).getShortId().equals(shortener.getShortId())) {
                 shortener.setShortId(shortenerService.generateShortId());
-                //i = -1;
+                i = -1;
             }
         }
+
         myDataList.add(shortener);
         objectMapper.writeValue(file, myDataList);
-        return shortenerService.TransformShortenerEntityInShortenerDto(shortener);
+        return new ResponseEntity<>(shortenerService.TransformShortenerEntityInShortenerDto(shortener), HttpStatus.CREATED);
+
     }
 
     @GetMapping("/{shortId}")
@@ -72,11 +81,12 @@ public class ShortenerController {
         });
         Shortener shortenerToDisplay = myDataList.stream().filter(
                 myObj -> myObj.getShortId().equals(shortId)
-        ).findFirst().get();
+        ).findFirst().orElseThrow(() -> new ShortenerNotFoundException());
+
 
         shortenerToDisplay.setCreationDate(LocalDateTime.now());
         objectMapper.writeValue(file, myDataList);
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(shortenerToDisplay.getRealUrl()));
 
@@ -84,13 +94,19 @@ public class ShortenerController {
     }
 
     //tache planifiée
-    @Scheduled(cron = "${cron}") //rafraichissement toutes les minutes
+    @Scheduled(cron = "*/1 * * * * *") //rafraichissement toutes les minutes
     public void deleteExpiredShorteners() throws IOException {
+
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
-
+        if (!file.exists()) {
+            List<String> emptyList = new ArrayList<>();
+            new File(filePath).createNewFile();
+            objectMapper.writeValue(file, emptyList);
+        }
 
         // Supprimer les shorteners expirés
         myDataList.removeIf(shortener -> {
@@ -105,7 +121,7 @@ public class ShortenerController {
     }
 
     @DeleteMapping("/links/{id}")
-    public ResponseEntity<?> deleteShortener(@PathVariable UUID id, @RequestHeader("xRemovalToken") String removalToken) throws IOException {
+    public ResponseEntity<String> deleteShortener(@PathVariable UUID id, @RequestHeader("xRemovalToken") String removalToken) throws IOException {
         // response.getHeader()
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -113,22 +129,25 @@ public class ShortenerController {
 
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
+
         if (myDataList.stream().filter(
                 myObj -> myObj.getId().equals(id)).findFirst().isEmpty()) {
-            return new ResponseEntity<>("Shortener is not find", HttpStatus.NOT_FOUND);
+            throw new InvalidShortenerIdException();
         }
+
         Shortener shortenerToDisplay = myDataList.stream().filter(
                 myObj -> myObj.getId().equals(id)).findFirst().get();
 
 
-        if (shortenerToDisplay.getxRemovalToken().equals(removalToken)) {
+        if (!shortenerToDisplay.getxRemovalToken().equals(removalToken)) {
+            throw new InvalidRemovalTokenException();
+        } else {
             myDataList.remove(shortenerToDisplay);
             objectMapper.writeValue(file, myDataList);
 
-            return new ResponseEntity<>("Shortener deleted successfully", HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>("Shortener is not deleted", HttpStatus.FORBIDDEN);
     }
 
 }
