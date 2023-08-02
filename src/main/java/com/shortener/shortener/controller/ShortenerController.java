@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,12 +96,17 @@ public class ShortenerController {
     //tache planifiée
     @Scheduled(cron = "*/1 * * * * *") //rafraichissement toutes les minutes
     public void deleteExpiredShorteners() throws IOException {
+
         File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
-
+        if (!file.exists()) {
+            List<String> emptyList = new ArrayList<>();
+            new File(filePath).createNewFile();
+            objectMapper.writeValue(file, emptyList);
+        }
 
         // Supprimer les shorteners expirés
         myDataList.removeIf(shortener -> {

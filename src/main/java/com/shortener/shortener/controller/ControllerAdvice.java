@@ -38,7 +38,7 @@ public class ControllerAdvice {
     @ExceptionHandler(InvalidRemovalTokenException.class)
     ResponseEntity<Void> handleInvalidRemovalTokenException(InvalidRemovalTokenException e, HttpServletRequest request) {
         LogErrMessage errorMessage = new LogErrMessage();
-
+        int lineNumber = e.getStackTrace()[0].getLineNumber() - 1;
         errorMessage.setMethod("deleteShortener");
         String ipAddress = request.getRemoteAddr();
 
@@ -50,8 +50,8 @@ public class ControllerAdvice {
 
         errorMessage.setAdressIp(ipAddress);
         errorMessage.setTypeOfError("Error 403");
-        errorMessage.setFileSrc("Shortener controller");
-        errorMessage.setLine(158);
+        errorMessage.setFileSrc(e.getStackTrace()[0].getFileName());
+        errorMessage.setLine(lineNumber);
         errorMessage.setMessageError("le token est incorrect.");
 
         shortenerService.generateErrorMessage(errorMessage);
@@ -79,10 +79,10 @@ public class ControllerAdvice {
         errorMessage.setPathHttp(fullPath);
 
         errorMessage.setAdressIp(ipAddress);
-        errorMessage.setTypeOfError("Error 400");
+        errorMessage.setTypeOfError("Error 400 ");
         errorMessage.setFileSrc(e.getStackTrace()[0].getFileName());
         errorMessage.setLine(lineNumber);
-        errorMessage.setMessageError("invalid url");
+        errorMessage.setMessageError(" invalid url");
 
         shortenerService.generateErrorMessage(errorMessage);
 
