@@ -42,10 +42,15 @@ public class ShortenerController {
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     //@ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<ShortenerDto> createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
-
-        File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(filePath);
+        if (!file.exists()) {
+            List<String> emptyList = new ArrayList<>();
+            new File(filePath).createNewFile();
+            objectMapper.writeValue(file, emptyList);
+        }
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
         List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
         });
         if (!shortenerService.startWithHttpOrHttpsAndNotShortUrl(shortener.getRealUrl(), myDataList)) {
@@ -96,17 +101,17 @@ public class ShortenerController {
     //tache planifiée
     @Scheduled(cron = "*/1 * * * * *") //rafraichissement toutes les minutes
     public void deleteExpiredShorteners() throws IOException {
-
-        File file = new File(filePath);
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
-        });
+        File file = new File(filePath);
         if (!file.exists()) {
             List<String> emptyList = new ArrayList<>();
             new File(filePath).createNewFile();
             objectMapper.writeValue(file, emptyList);
         }
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
+        });
+
 
         // Supprimer les shorteners expirés
         myDataList.removeIf(shortener -> {
