@@ -39,9 +39,11 @@ public class ShortenerController {
     @Value("${json.file.path}")
     private String filePath;
 
-    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/links", produces = MediaType.APPLICATION_JSON_VALUE)
     //@ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity<ShortenerDto> createUrl(@RequestBody Shortener shortener, HttpServletResponse response) throws IOException {
+    public ResponseEntity<ShortenerDto> createUrl(@RequestBody String realUrl, HttpServletResponse response) throws IOException {
+        Shortener shortener = new Shortener();
+        shortener.setRealUrl(realUrl.replace("\"", ""));
         ObjectMapper objectMapper = new ObjectMapper();
         File file = new File(filePath);
         if (!file.exists()) {
@@ -61,7 +63,7 @@ public class ShortenerController {
         shortener.setShortId(shortenerService.generateShortId());
         shortener.setxRemovalToken(shortenerService.generateXRemovalToken());
         shortener.setCreationDate(shortenerService.generateCreationDate());
-        response.setHeader("generate x removal", shortener.getxRemovalToken());
+        response.setHeader("X-Removal-Token", shortener.getxRemovalToken());
 
 
         for (int i = 0; i < myDataList.size(); i++) {

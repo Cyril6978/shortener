@@ -1,1 +1,31 @@
-[ ]
+[ {
+  "id" : "413708e1-307e-486d-bacc-5942c64111cc",
+  "shortId" : "3LiW5O3E",
+  "realUrl" : "https://www.youtube.com",
+  "xRemovalToken" : "39608802f6bd442db66ae623c32b7de4",
+  "creationDate" : "2023-08-04T11:08:50.923935"
+}, {
+  "id" : "af92859d-cc3c-446f-ac7c-5fe44ce08692",
+  "shortId" : "lIi5pa8j",
+  "realUrl" : "https://www.youtube.com",
+  "xRemovalToken" : "941026b73a1b446cbb9cd8931b73c524",
+  "creationDate" : "2023-08-04T11:12:20.553708"
+}, {
+  "id" : "f185ca23-65a8-4ce0-b17e-7a32b26e2055",
+  "shortId" : "cwAYflng",
+  "realUrl" : "https://www.youtube.com\r\n",
+  "xRemovalToken" : "406055a4277f45448da01fa8193d3ef6",
+  "creationDate" : "2023-08-04T14:51:56.494265"
+}, {
+  "id" : "b2d36374-2ab5-466e-a1af-5ad0e1e35235",
+  "shortId" : "pdkWDqTm",
+  "realUrl" : "https://www.youtube.com\r\n",
+  "xRemovalToken" : "95eb449d9f78401da33f6cce6bea46c7",
+  "creationDate" : "2023-08-04T15:06:50.101513"
+}, {
+  "id" : "4da49a29-1c3d-44d7-9ea8-e0860ec43ebe",
+  "shortId" : "cKm3aRWL",
+  "realUrl" : "https://www.youtube.com",
+  "xRemovalToken" : "3f4480cf5ed9450da0672d576dba8143",
+  "creationDate" : "2023-08-04T15:07:12.520728"
+} ]
