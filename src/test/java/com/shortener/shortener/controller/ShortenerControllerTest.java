@@ -1,5 +1,9 @@
 package com.shortener.shortener.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shortener.shortener.entity.Shortener;
+import com.shortener.shortener.service.ShortenerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,10 +11,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.File;
 import java.io.PrintWriter;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -18,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application-test.properties")
 @SpringBootTest
+
 public class ShortenerControllerTest {
 
     @Autowired
@@ -30,7 +40,7 @@ public class ShortenerControllerTest {
             "shortId" : "AZERTYUI",
             "realUrl" : "https://www.url.com",
             "xRemovalToken" : "544fb8d4899b416a8a1fc7d2312d319b",
-            "creationDate" : "2023-08-04T15:05:36.510556"
+            "creationDate" : "2022-08-04T15:05:36.510556"
             }]
             """;
 
@@ -91,10 +101,20 @@ public class ShortenerControllerTest {
     @Test
     public void shouldDeleteExpiredShortener() throws Exception {
 
+        ShortenerService mockShortenerService = mock(ShortenerService.class);
+        ShortenerController controller = new ShortenerController();
+        controller.setShortenerService(mockShortenerService);
+        ReflectionTestUtils.setField(controller, "filePath", filePath);
         PrintWriter writer = new PrintWriter(filePath);
         writer.print(shortenerTest);
         writer.close();
+        controller.deleteExpiredShorteners();
 
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(filePath);
+        List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
+        });
+        assertTrue(myDataList.isEmpty(), "le shortener est expiré, la liste est vide! zuuuper!");
     }
 }

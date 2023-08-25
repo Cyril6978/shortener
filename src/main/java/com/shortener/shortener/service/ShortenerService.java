@@ -72,4 +72,8 @@ public class ShortenerService {
 
     }
 
+    public void deleteExpiredSorteners() {
+
+    }
+
 }

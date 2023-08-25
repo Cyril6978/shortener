@@ -100,6 +100,22 @@ public class ShortenerController {
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
+    public ShortenerService getShortenerService() {
+        return shortenerService;
+    }
+
+    public void setShortenerService(ShortenerService shortenerService) {
+        this.shortenerService = shortenerService;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
     //tache planifiée
     @Scheduled(cron = "*/1 * * * * *") //rafraichissement toutes les minutes
     public void deleteExpiredShorteners() throws IOException {
