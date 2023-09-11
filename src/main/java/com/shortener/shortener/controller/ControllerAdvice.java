@@ -47,7 +47,6 @@ public class ControllerAdvice {
         String queryString = request.getQueryString();
         String fullPath = requestURL.append('?').append(queryString).toString();
         errorMessage.setPathHttp(fullPath);
-
         errorMessage.setAdressIp(ipAddress);
         errorMessage.setTypeOfError("Error 403");
         errorMessage.setFileSrc(e.getStackTrace()[0].getFileName());

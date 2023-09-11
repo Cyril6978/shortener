@@ -133,7 +133,7 @@ public class ShortenerController {
 
         // Supprimer les shorteners expirés
         myDataList.removeIf(shortener -> {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
             LocalDateTime creationDate = LocalDateTime.parse(shortener.getCreationDate(), formatter);
             return creationDate.plusDays(30).isBefore(LocalDateTime.now());
         });

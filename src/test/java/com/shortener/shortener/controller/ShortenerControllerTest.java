@@ -3,7 +3,6 @@ package com.shortener.shortener.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shortener.shortener.entity.Shortener;
-import com.shortener.shortener.service.ShortenerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,15 +10,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -27,20 +25,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application-test.properties")
 @SpringBootTest
-
 public class ShortenerControllerTest {
 
+    @Autowired
+    ShortenerController shortenerController;
     @Autowired
     private MockMvc mockMvc;
     @Value("${json.file.path}")
     private String filePath;
+
     private String shortenerTest = """
             [{
             "id" : "6815fe94-8b47-4420-8299-1669304b39ec",
             "shortId" : "AZERTYUI",
             "realUrl" : "https://www.url.com",
             "xRemovalToken" : "544fb8d4899b416a8a1fc7d2312d319b",
-            "creationDate" : "2022-08-04T15:05:36.510556"
+            "creationDate" : "2023-09-04T15:05:36.510556000"
             }]
             """;
 
@@ -75,6 +75,35 @@ public class ShortenerControllerTest {
     }
 
     @Test
+    public void shouldDeleteExpiredShortener() throws Exception {
+
+        // Given
+        String expiredShortenerTest = """
+                [{
+                "id" : "6815fe94-8b47-4420-8299-1669304b39ec",
+                "shortId" : "AZERTYUI",
+                "realUrl" : "https://www.url.com",
+                "xRemovalToken" : "544fb8d4899b416a8a1fc7d2312d319b",
+                "creationDate" : "2022-08-04T15:05:36.510556000"
+                }]
+                """;
+
+        PrintWriter writer = new PrintWriter(filePath);
+        writer.print(expiredShortenerTest);
+        writer.close();
+
+        // When
+        shortenerController.deleteExpiredShorteners();
+
+        // Then
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(filePath);
+        List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
+        });
+        assertTrue(myDataList.isEmpty());
+    }
+
+    @Test
     public void shouldDelete() throws Exception {
 
         PrintWriter writer = new PrintWriter(filePath);
@@ -84,37 +113,64 @@ public class ShortenerControllerTest {
 
         String removalToken = "544fb8d4899b416a8a1fc7d2312d319b";
         String id = "6815fe94-8b47-4420-8299-1669304b39ec";
-        String invalidRemovalToken = "Not-A-VALID-t0ken";
-        String invalidId = "6815fe94-8b47-4420-8299-1669304b39ea";
+
 
         mockMvc.perform(delete("/links/" + id)
                         .header("xRemovalToken", removalToken))
                 .andExpect(status().isNoContent());
+
         mockMvc.perform(delete("/links/" + id)
-                        .header("xRemovalToken", invalidRemovalToken))
-                .andExpect(status().isForbidden());
-        mockMvc.perform(delete("/links/" + invalidId)
                         .header("xRemovalToken", removalToken))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void shouldDeleteExpiredShortener() throws Exception {
+    public void shouldntDelete_invalidRemovalToken() throws Exception {
 
-        ShortenerService mockShortenerService = mock(ShortenerService.class);
-        ShortenerController controller = new ShortenerController();
-        controller.setShortenerService(mockShortenerService);
-        ReflectionTestUtils.setField(controller, "filePath", filePath);
+        // Given
+
+        String id = "6815fe94-8b47-4420-8299-1669304b39ec";
+        String invalidRemovalToken = "Not-A-VALID-t0ken";
+        String creationDate = LocalDateTime.now().toString();
+
+        String notExpiredShortenerTest = """
+                [{
+                "id" : "6815fe94-8b47-4420-8299-1669304b39ec",
+                "shortId" : "AZERTYUI",
+                "realUrl" : "https://www.url.com",
+                "xRemovalToken" : "544fb8d4899b416a8a1fc7d2312d319b",
+                "creationDate" : "%s"
+                }]
+                """.formatted(creationDate);
+
+        PrintWriter writer = new PrintWriter(filePath);
+        writer.print(notExpiredShortenerTest);
+        writer.close();
+
+        // When
+        mockMvc.perform(delete("/links/" + id)
+                        .header("xRemovalToken", invalidRemovalToken))
+
+                // Then
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void shouldntDelete_invalidId() throws Exception {
+
+        // Given
         PrintWriter writer = new PrintWriter(filePath);
         writer.print(shortenerTest);
         writer.close();
-        controller.deleteExpiredShorteners();
+        String invalidId = "6815fe94-8b47-4420-8299-1669304b39ea";
+        String removalToken = "544fb8d4899b416a8a1fc7d2312d319b";
 
+        // When
+        mockMvc.perform(delete("/links/" + invalidId)
+                        .header("xRemovalToken", removalToken))
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        File file = new File(filePath);
-        List<Shortener> myDataList = objectMapper.readValue(file, new TypeReference<List<Shortener>>() {
-        });
-        assertTrue(myDataList.isEmpty(), "le shortener est expiré, la liste est vide! zuuuper!");
+                // Then
+                .andExpect(status().isNotFound());
     }
+
 }

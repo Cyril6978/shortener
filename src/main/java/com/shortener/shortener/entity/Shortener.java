@@ -20,12 +20,12 @@ public class Shortener {
 
 
     public Shortener() {
-        
+
     }
 
 
     @Transient
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
 
     public Shortener(UUID id, String shortId, String realUrl, String xRemovalToken, String creationDate) {
 
